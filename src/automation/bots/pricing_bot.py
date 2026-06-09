@@ -1,39 +1,67 @@
 import asyncio
 import requests
+from typing import Optional
 
 class PricingBot:
-    """Dynamic pricing bot for AI-driven product sourcing"""
+    """Dynamic pricing bot with Sentiment-Urgency Weighting"""
     
     def __init__(self):
         self.api_base = "https://price-api.co.za/v2"
         self.threshold_lower = 0.85  # 15% below market
         self.threshold_upper = 1.15  # 15% above market
-        
+        self.base_margin = 0.35      # Target 35% margin
+        self.integrity_premium = 0.10 # 10% for DIETER stack
+
     async def get_market_price(self, product_id: str) -> float:
         """Scrape real-time market pricing"""
         # Placeholder for actual API call
-        return 100.0
-    
+        return 1000.0
+
+    async def get_load_shedding_stage(self) -> int:
+        """Fetch current Eskom load-shedding stage"""
+        # Placeholder for Eskom Se Push API or similar
+        return 4 
+
+    def calculate_urgency_multiplier(self, stage: int) -> float:
+        """Calculate price multiplier based on load-shedding urgency"""
+        if stage >= 6:
+            return 0.20  # 20% increase for Stage 6+
+        elif stage >= 4:
+            return 0.15  # 15% increase for Stage 4-5
+        elif stage >= 2:
+            return 0.05  # 5% increase for Stage 2-3
+        return 0.0
+
     async def calculate_optimal_price(
-        self, 
-        product_id: str, 
-        base_cost: float
+        self,
+        product_id: str,
+        base_cost: float,
+        is_integrity_wrapped: bool = False
     ) -> float:
-        """Dynamic pricing with margin optimization"""
+        """Dynamic pricing with margin and urgency optimization"""
         market_price = await self.get_market_price(product_id)
         
-        # Target 35%+ YoY growth margin
-        optimal_margin = 0.35
-        optimal_price = base_cost * (1 + optimal_margin)
+        # 1. Base Margin
+        price = base_cost * (1 + self.base_margin)
         
-        # Adjust based on market position
-        if optimal_price < market_price * self.threshold_lower:
-            optimal_price = market_price * 0.95  # 5% below market
+        # 2. Urgency Modifier (Load-shedding signal)
+        ls_stage = await self.get_load_shedding_stage()
+        urgency_mult = self.calculate_urgency_multiplier(ls_stage)
+        price *= (1 + urgency_mult)
         
-        return round(optimal_price, 2)
-    
-    async def run(self, product_id: str, base_cost: float):
+        # 3. Integrity Premium
+        if is_integrity_wrapped:
+            price *= (1 + self.integrity_premium)
+            
+        # 4. Market Guardrails
+        # Ensure we don't go too far below market unless strategically necessary
+        if price < market_price * self.threshold_lower:
+            price = market_price * 0.95  # Standardize at 5% below market
+            
+        return round(price, 2)
+
+    async def run(self, product_id: str, base_cost: float, is_integrity: bool = False):
         """Execute pricing bot"""
-        price = await self.calculate_optimal_price(product_id, base_cost)
-        print(f"[PRICING BOT] Product {product_id}: R{price}")
+        price = await self.calculate_optimal_price(product_id, base_cost, is_integrity)
+        print(f"[PRICING BOT] Product {product_id}: R{price} (Integrity: {is_integrity})")
         return price
