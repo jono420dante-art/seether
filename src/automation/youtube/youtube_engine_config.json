@@ -1,0 +1,36 @@
+{
+  "channels": [
+    {
+      "id": "UCadswi1Ru84isQ6G7zrwGHQ",
+      "name": "Target Channel",
+      "status": "active"
+    }
+  ],
+  "thresholds": {
+    "monitoring": {
+      "vph": 500,
+      "velocity": 0.10,
+      "action": "log_and_track"
+    },
+    "active_intervention": {
+      "vph": 500,
+      "velocity": 0.20,
+      "action": "trigger_mofu_offers"
+    },
+    "high_ticket_burst": {
+      "vph": 2000,
+      "velocity": 0.50,
+      "action": "activate_high_ticket_funnel"
+    },
+    "crisis_ceo_intervention": {
+      "vph": 5000,
+      "velocity": 1.00,
+      "action": "immediate_executive_alert"
+    }
+  },
+  "va_logic": {
+    "enabled": true,
+    "calculation_window_minutes": 60,
+    "min_samples": 3
+  }
+}
