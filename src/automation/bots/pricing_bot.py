@@ -1,16 +1,19 @@
 import asyncio
 import requests
+import logging
 from typing import Optional
+from src.automation.bots.eskom_client import EskomClient
 
 class PricingBot:
     """Dynamic pricing bot with Sentiment-Urgency Weighting"""
     
-    def __init__(self):
+    def __init__(self, eskom_api_key: Optional[str] = None):
         self.api_base = "https://price-api.co.za/v2"
         self.threshold_lower = 0.85  # 15% below market
         self.threshold_upper = 1.15  # 15% above market
         self.base_margin = 0.35      # Target 35% margin
         self.integrity_premium = 0.10 # 10% for DIETER stack
+        self.eskom = EskomClient(api_key=eskom_api_key)
 
     async def get_market_price(self, product_id: str) -> float:
         """Scrape real-time market pricing"""
@@ -18,9 +21,8 @@ class PricingBot:
         return 1000.0
 
     async def get_load_shedding_stage(self) -> int:
-        """Fetch current Eskom load-shedding stage"""
-        # Placeholder for Eskom Se Push API or similar
-        return 4 
+        """Fetch current Eskom load-shedding stage using the Business API"""
+        return self.eskom.get_area_status("eskom")
 
     def calculate_urgency_multiplier(self, stage: int) -> float:
         """Calculate price multiplier based on load-shedding urgency"""
