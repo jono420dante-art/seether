@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Dict, Optional
 from src.automation.bots.pricing_bot import PricingBot
 from src.automation.youtube.trend_detector import TrendDetector
+from src.finance.finance_manager import FinanceManager
 
 app = FastAPI(
     title="Transparent Programs & Design API",
@@ -20,9 +21,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Initialize bots
+# Initialize modules
 pricing_bot = PricingBot()
 trend_detector = TrendDetector()
+finance_manager = FinanceManager()
 
 class PricingRequest(BaseModel):
     product_id: str
@@ -41,6 +43,13 @@ class TrendRequest(BaseModel):
 @app.get("/health")
 async def health_check():
     return {"status": "operational", "version": "1.0.0"}
+
+@app.get("/api/finance/status")
+async def get_finance_status():
+    try:
+        return finance_manager.get_invoicing_status()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/pricing")
 async def get_optimal_pricing(request: PricingRequest):
