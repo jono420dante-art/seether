@@ -2,8 +2,8 @@ import asyncio
 import uuid
 import datetime
 from typing import Dict
-from src.automation.youtube.trend_detector import TrendDetector
-from src.security.integrity_audit import IntegrityAuditor
+from apps.worker.youtube.trend_detector import TrendDetector
+from services.neural_hub.security.integrity_audit import IntegrityAuditor
 
 class DirectorFlowPOC:
     """

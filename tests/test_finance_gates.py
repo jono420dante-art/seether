@@ -1,5 +1,5 @@
 import unittest
-from src.finance.invoicing_gate import InvoicingGate, MockStatusProvider
+from services.neural_hub.finance.invoicing_gate import InvoicingGate, MockStatusProvider
 
 class TestInvoicingGate(unittest.TestCase):
     def test_all_gates_pass(self):

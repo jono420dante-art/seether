@@ -1,4 +1,4 @@
-from src.finance.invoicing_gate import InvoicingGate, DbStatusProvider
+from services.neural_hub.finance.invoicing_gate import InvoicingGate, DbStatusProvider
 
 class FinanceManager:
     """
