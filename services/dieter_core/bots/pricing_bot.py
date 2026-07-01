@@ -2,7 +2,7 @@ import asyncio
 import requests
 import logging
 from typing import Optional
-from src.automation.bots.eskom_client import EskomClient
+from services.dieter_core.bots.eskom_client import EskomClient
 
 class PricingBot:
     """Dynamic pricing bot with Sentiment-Urgency Weighting"""

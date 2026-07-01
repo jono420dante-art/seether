@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Optional
-from src.automation.bots.pricing_bot import PricingBot
-from src.automation.youtube.trend_detector import TrendDetector
-from src.finance.finance_manager import FinanceManager
+from services.dieter_core.bots.pricing_bot import PricingBot
+from apps.worker.youtube.trend_detector import TrendDetector
+from services.neural_hub.finance.finance_manager import FinanceManager
 
 app = FastAPI(
     title="Transparent Programs & Design API",
